@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
+import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -16,6 +16,8 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import Svg, { Circle, G } from 'react-native-svg';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 import {
   Colors,
@@ -24,36 +26,11 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import CustomCircularLoader from './CustomCircularLoader';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -71,47 +48,57 @@ function App(): React.JSX.Element {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
+
+        <CircularLoader />
+        <CustomCircularLoader percentage={100} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+const CircularLoader = () => {
+  const fill = 80; // The percentage you want to display
+
+  return (
+    <View style={styles.container}>
+      <AnimatedCircularProgress
+        size={200}
+        width={10}
+        fill={fill}
+        tintColor="#FF6347" // Customize the color here
+        backgroundColor="#E0E0E0"
+        arcSweepAngle={240} // Customize the angle
+        rotation={-120}
+        lineCap="round"
+      >
+        {() => (
+          <View style={styles.innerContent}>
+            <Text style={styles.percentage}>{fill}%</Text>
+            <Text style={styles.status}>Normal</Text>
+          </View>
+        )}
+      </AnimatedCircularProgress>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  innerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  percentage: {
+    fontSize: 40,
+    fontWeight: 'bold',
   },
-  highlight: {
-    fontWeight: '700',
+  status: {
+    fontSize: 20,
   },
 });
 
